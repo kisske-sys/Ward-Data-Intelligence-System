@@ -19,7 +19,6 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-// ─── Types ───────────────────────────────────────────
 export interface FormField {
   id: string;
   label: string;
@@ -28,6 +27,7 @@ export interface FormField {
   order: number;
   options?: string[];   // สำหรับ select / checklist
   minValue?: number;    // สำหรับ number — ถ้าต่ำกว่านี้ให้แจ้งเตือน
+  unit?: string;        // <--- เพิ่มบรรทัดนี้ครับ (สำหรับระบุหน่วยวัด เช่น kg, mmHg)
 }
 
 export interface FormTemplate {
