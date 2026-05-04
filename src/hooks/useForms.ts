@@ -21,7 +21,6 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-// ─── Types ───────────────────────────────────────────────────
 export interface FormField {
   id: string;
   label: string;
@@ -30,6 +29,7 @@ export interface FormField {
   order: number;
   options?: string[];
   minValue?: number;
+  unit?: string; // <--- เราต้องมีบรรทัดนี้ครับ Vercel ถึงจะรันผ่าน
 }
 
 export interface FormTemplate {
