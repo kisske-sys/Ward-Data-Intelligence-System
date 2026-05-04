@@ -1,27 +1,34 @@
 @import "tailwindcss";
 
-/* ─────────────────────────────────────────────
-   CSS Custom Properties (Design Tokens)
-───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS
+   ทุกสีและ effect ถูก centralize ไว้ที่นี่
+   แก้ที่นี่ที่เดียว — ทั้ง app เปลี่ยนพร้อมกัน
+═══════════════════════════════════════════════════════ */
 :root {
-  /* Pastel gradient background */
-  --grad-1: #ddd6fe;   /* violet-200  */
-  --grad-2: #bfdbfe;   /* blue-200    */
-  --grad-3: #fbcfe8;   /* pink-200    */
+  /* Pastel gradient stops */
+  --grad-start:  #ede9fe;   /* violet-100 */
+  --grad-mid:    #dbeafe;   /* blue-100   */
+  --grad-end:    #fce7f3;   /* pink-100   */
 
-  /* Glass surfaces — matte/satin finish */
-  --glass-bg:        rgba(255, 255, 255, 0.30);
-  --glass-border:    rgba(255, 255, 255, 0.52);
-  --glass-shadow:    0 8px 32px rgba(109, 40, 217, 0.10);
-  --glass-blur:      blur(20px) saturate(175%);
+  /* Glass surfaces — เรียงจากโปร่งใส → ทึบ */
+  --glass-bg:          rgba(255, 255, 255, 0.28);
+  --glass-bg-hover:    rgba(255, 255, 255, 0.42);
+  --glass-strong-bg:   rgba(255, 255, 255, 0.60);
+  --glass-card-bg:     rgba(255, 255, 255, 0.20);
+  --glass-border:      rgba(255, 255, 255, 0.55);
+  --glass-border-soft: rgba(255, 255, 255, 0.38);
+  --glass-shadow-sm:   0 4px 16px rgba(109, 40, 217, 0.08);
+  --glass-shadow-md:   0 8px 32px rgba(109, 40, 217, 0.12);
+  --glass-shadow-lg:   0 20px 60px rgba(109, 40, 217, 0.16);
+  --glass-blur:        blur(20px) saturate(180%);
+  --glass-blur-strong: blur(28px) saturate(200%);
 
-  --glass-strong-bg: rgba(255, 255, 255, 0.58);
-  --glass-card-bg:   rgba(255, 255, 255, 0.22);
-
-  /* Text — dark enough for WCAG contrast */
-  --tx-primary:   #1e1b4b;   /* indigo-950  */
-  --tx-secondary: #4c1d95;   /* violet-900  */
-  --tx-muted:     #6d28d9;   /* violet-700  */
+  /* Typography scale */
+  --tx-primary:   #1e1b4b;   /* indigo-950 — เข้มสุด อ่านง่ายบน pastel */
+  --tx-secondary: #3730a3;   /* indigo-700 */
+  --tx-muted:     #6d28d9;   /* violet-700 */
+  --tx-faint:     #8b5cf6;   /* violet-500 */
 
   /* Accent palette */
   --accent-violet: #7c3aed;
@@ -29,32 +36,72 @@
   --accent-rose:   #e11d48;
   --accent-mint:   #059669;
   --accent-amber:  #d97706;
+  --accent-sky:    #0284c7;
+
+  /* Layout dimensions — Desktop Sidebar System */
+  --sidebar-w:    240px;   /* ความกว้าง sidebar บน desktop */
+  --topbar-h:     56px;    /* ความสูง topbar */
+  --footer-h:     32px;    /* ความสูง footer */
+  --bottombar-h:  64px;    /* ความสูง bottom nav (mobile) */
+
+  /* Spacing ที่ใช้ซ้ำบ่อย */
+  --content-px:   1rem;    /* mobile */
+  --content-px-md: 1.5rem; /* tablet */
+  --content-px-lg: 2rem;   /* desktop */
 }
 
-/* ─────────────────────────────────────────────
-   Reset & Base
-───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATION
+   บอก browser ล่วงหน้าว่า element ไหนจะ animate
+   ป้องกัน reflow ที่ทำให้ UI กระตุก
+═══════════════════════════════════════════════════════ */
+.glass,
+.glass-strong,
+.glass-card,
+.topbar,
+.sidebar,
+.bottom-nav,
+.footer-bar {
+  /* will-change บอก browser จัด layer ไว้ล่วงหน้า = ลด paint cost */
+  will-change: transform;
+  /* contain ป้องกัน layout recalculation ลาม */
+  contain: layout style;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════════════ */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  /* font-size ที่ทำให้ 1rem = 15px แทน 16px
+     อ่านภาษาไทยสบายกว่าเล็กน้อย */
+  font-size: 15px;
+}
 
 body {
   font-family: 'Sarabun', 'Noto Sans Thai', system-ui, -apple-system, sans-serif;
-  font-size: 15px;
   line-height: 1.65;
   min-height: 100svh;
   color: var(--tx-primary);
-  /* Soft 3-stop pastel gradient, fixed so it doesn't scroll */
   background:
-    linear-gradient(135deg, var(--grad-1) 0%, var(--grad-2) 48%, var(--grad-3) 100%);
+    linear-gradient(135deg,
+      var(--grad-start) 0%,
+      var(--grad-mid)   50%,
+      var(--grad-end)   100%);
   background-attachment: fixed;
+  /* GPU-accelerated rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Ambient orbs add depth without being gloss */
+/* Ambient orbs — decorative depth, fixed = ไม่กระทบ layout */
 body::before,
 body::after {
   content: '';
@@ -64,14 +111,18 @@ body::after {
   z-index: 0;
 }
 body::before {
-  width: 70vw; height: 70vw;
-  top: -25vw; left: -15vw;
-  background: radial-gradient(circle, rgba(196,181,253,.32) 0%, transparent 65%);
+  width: 65vw; height: 65vw;
+  top: -20vw; left: -10vw;
+  background: radial-gradient(circle,
+    rgba(196,181,253,.28) 0%,
+    transparent 60%);
 }
 body::after {
-  width: 60vw; height: 60vw;
-  bottom: -18vw; right: -10vw;
-  background: radial-gradient(circle, rgba(251,207,232,.28) 0%, transparent 65%);
+  width: 55vw; height: 55vw;
+  bottom: -15vw; right: -8vw;
+  background: radial-gradient(circle,
+    rgba(251,207,232,.24) 0%,
+    transparent 60%);
 }
 
 #root {
@@ -80,65 +131,234 @@ body::after {
   min-height: 100svh;
 }
 
-/* ─────────────────────────────────────────────
-   Glass Surface Utilities
-───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   APP SHELL — RESPONSIVE LAYOUT SYSTEM
+   
+   Mobile  (<768px): TopBar + Content + BottomBar + Footer
+   Desktop (≥768px): TopBar + Sidebar | Content + Footer
+   
+   ┌──────────────────────────────────┐
+   │           TOP BAR                │  ← sticky, full-width
+   ├──────────┬───────────────────────┤
+   │          │                       │
+   │ SIDEBAR  │   MAIN CONTENT        │  ← desktop only
+   │ (fixed)  │   (scrollable)        │
+   │          │                       │
+   ├──────────┴───────────────────────┤
+   │           FOOTER BAR             │  ← fixed bottom, full-width
+   └──────────────────────────────────┘
+═══════════════════════════════════════════════════════ */
 
-/* Standard frosted-matte panel (header, bottom bar, overlays) */
+/* Wrapper ที่ครอบ sidebar + content เข้าด้วยกัน */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+/* Sidebar — ซ่อนบน mobile, แสดงบน desktop */
+.sidebar {
+  display: none; /* mobile: hidden */
+}
+
+/* Main area ที่อยู่ข้างๆ sidebar */
+.main-area {
+  flex: 1;
+  /* บน mobile: เผื่อ space ให้ BottomBar + FooterBar */
+  padding-top: var(--topbar-h);
+  padding-bottom: calc(var(--bottombar-h) + var(--footer-h) + 8px);
+}
+
+/* ─── DESKTOP BREAKPOINT ─────────────────────── */
+@media (min-width: 768px) {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    width: var(--sidebar-w);
+    /* ความสูง = viewport - topbar - footer */
+    height: calc(100svh - var(--topbar-h) - var(--footer-h));
+    overflow-y: auto;
+    z-index: 30;
+    /* Glassmorphism สำหรับ sidebar */
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-right: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow-sm);
+  }
+
+  .main-area {
+    /* เลื่อนเนื้อหาออกจาก sidebar */
+    margin-left: var(--sidebar-w);
+    padding-bottom: calc(var(--footer-h) + 16px);
+  }
+
+  /* ซ่อน BottomBar บน desktop */
+  .bottom-nav {
+    display: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   TOP BAR
+═══════════════════════════════════════════════════════ */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-h);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 var(--content-px);
+  background: var(--glass-strong-bg);
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-sm);
+}
+
+@media (min-width: 768px) {
+  .topbar {
+    padding: 0 var(--content-px-lg);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER BAR
+═══════════════════════════════════════════════════════ */
+.footer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--footer-h);
+  z-index: 25; /* ต่ำกว่า BottomBar (z-40) และ Sidebar (z-30) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--glass-border-soft);
+}
+
+/* บน desktop: footer ต้องเริ่มหลัง sidebar */
+@media (min-width: 768px) {
+  .footer-bar {
+    left: 0; /* full-width ตาม design */
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   BOTTOM NAV (Mobile only)
+═══════════════════════════════════════════════════════ */
+.bottom-nav {
+  position: fixed;
+  left: 0.75rem;
+  right: 0.75rem;
+  /* อยู่เหนือ footer โดยพอดี */
+  bottom: calc(var(--footer-h) + 4px);
+  height: var(--bottombar-h);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 20px;
+  padding: 0 0.5rem;
+  background: var(--glass-strong-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-md);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CONTENT AREA — Consistent padding ทุกหน้า
+═══════════════════════════════════════════════════════ */
+.page-content {
+  width: 100%;
+  max-width: 760px;   /* จำกัดความกว้างของเนื้อหาสำหรับอ่านสบาย */
+  margin: 0 auto;
+  padding: 1.25rem var(--content-px) 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .page-content {
+    padding: 1.5rem var(--content-px-md) 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .page-content {
+    padding: 2rem var(--content-px-lg) 2.5rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   GLASS SURFACES
+═══════════════════════════════════════════════════════ */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--glass-shadow-sm);
+  transition: background 0.2s;
+}
+.glass:where(a, button):hover {
+  background: var(--glass-bg-hover);
 }
 
-/* Elevated modal / dialog — slightly more opaque for readability */
 .glass-strong {
   background: var(--glass-strong-bg);
-  backdrop-filter: blur(28px) saturate(200%);
-  -webkit-backdrop-filter: blur(28px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.68);
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border);
   box-shadow:
-    0 20px 60px rgba(109, 40, 217, 0.14),
-    0 4px 16px rgba(109, 40, 217, 0.08),
-    inset 0 1px 0 rgba(255,255,255,0.6);
+    var(--glass-shadow-lg),
+    inset 0 1px 0 rgba(255,255,255,0.65);
 }
 
-/* Subtle content card — lowest elevation */
 .glass-card {
   background: var(--glass-card-bg);
-  backdrop-filter: blur(14px) saturate(155%);
-  -webkit-backdrop-filter: blur(14px) saturate(155%);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.07);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid var(--glass-border-soft);
+  box-shadow: var(--glass-shadow-sm);
 }
 
-/* ─────────────────────────────────────────────
-   Inputs
-───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   FORM INPUTS
+═══════════════════════════════════════════════════════ */
 .input-glass {
   display: block;
   width: 100%;
-  padding: 0.5rem 0.875rem;
-  background: rgba(255, 255, 255, 0.58);
+  padding: 0.55rem 0.9rem;
+  background: rgba(255, 255, 255, 0.60);
   backdrop-filter: blur(8px);
-  border: 1.5px solid rgba(167, 139, 250, 0.35);
+  border: 1.5px solid rgba(167, 139, 250, 0.30);
   border-radius: 0.75rem;
   color: var(--tx-primary);
   font-size: 0.875rem;
   font-family: inherit;
   outline: none;
-  transition: border-color .18s, background .18s, box-shadow .18s;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+  /* ป้องกัน iOS zoom เมื่อ input ถูก focus */
+  font-size: max(16px, 0.875rem);
 }
-.input-glass::placeholder {
-  color: var(--tx-muted);
-  opacity: 0.5;
-}
+.input-glass::placeholder { color: var(--tx-faint); opacity: 0.65; }
 .input-glass:focus {
   border-color: var(--accent-violet);
-  background: rgba(255, 255, 255, 0.80);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.13);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
 }
 select.input-glass {
   appearance: none;
@@ -146,38 +366,48 @@ select.input-glass {
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2.25rem;
+  cursor: pointer;
 }
-textarea.input-glass { resize: vertical; min-height: 4rem; }
+textarea.input-glass {
+  resize: vertical;
+  min-height: 4.5rem;
+  font-size: 0.875rem;
+}
 
-/* ─────────────────────────────────────────────
-   Buttons
-───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════ */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.575rem 1.2rem;
+  padding: 0.55rem 1.2rem;
   background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.875rem;
   font-family: inherit;
   border: none;
   border-radius: 0.875rem;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(124, 58, 237, .30);
-  transition: transform .14s, box-shadow .14s, background .14s;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.28);
+  transition: transform .14s ease, box-shadow .14s ease, background .14s ease;
   white-space: nowrap;
   text-decoration: none;
+  /* ป้องกันปุ่มกว้างเกินบน mobile */
+  max-width: 100%;
 }
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
-  box-shadow: 0 6px 20px rgba(109, 40, 217, .38);
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.36);
   transform: translateY(-1px);
 }
-.btn-primary:active:not(:disabled) { transform: translateY(0); }
-.btn-primary:disabled { opacity: .44; cursor: default; transform: none; }
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(109, 40, 217, 0.24);
+}
+.btn-primary:disabled { opacity: 0.42; cursor: default; transform: none; }
 
 .btn-ghost {
   display: inline-flex;
@@ -186,83 +416,103 @@ textarea.input-glass { resize: vertical; min-height: 4rem; }
   gap: 0.4rem;
   padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.40);
-  border: 1.5px solid rgba(167, 139, 250, 0.28);
+  border: 1.5px solid rgba(167, 139, 250, 0.25);
   border-radius: 0.75rem;
   color: var(--tx-secondary);
   font-weight: 500;
   font-size: 0.875rem;
   font-family: inherit;
   cursor: pointer;
-  transition: background .14s, border-color .14s;
+  transition: background .14s ease, border-color .14s ease;
   text-decoration: none;
 }
-.btn-ghost:hover { background: rgba(255,255,255,.62); border-color: rgba(167,139,250,.45); }
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(167, 139, 250, 0.40);
+}
 
 .btn-danger {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 0.4rem;
   padding: 0.5rem 1rem;
   background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.875rem;
   font-family: inherit;
   border: none;
   border-radius: 0.875rem;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(225, 29, 72, .26);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.24);
+  transition: transform .14s ease;
 }
+.btn-danger:hover { transform: translateY(-1px); }
 
-/* ─────────────────────────────────────────────
-   Badges
-───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   BADGES
+═══════════════════════════════════════════════════════ */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.15rem 0.55rem;
+  gap: 0.2rem;
+  padding: 0.18rem 0.55rem;
   border-radius: 9999px;
   font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: .025em;
+  letter-spacing: .02em;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
-.badge-violet { background: rgba(167,139,250,.22); color: #4c1d95; border-color: rgba(167,139,250,.32); }
-.badge-sky    { background: rgba(125,211,252,.22); color: #0c4a6e; border-color: rgba(125,211,252,.32); }
-.badge-rose   { background: rgba(253,164,175,.22); color: #9f1239; border-color: rgba(253,164,175,.32); }
-.badge-mint   { background: rgba(110,231,183,.22); color: #065f46; border-color: rgba(110,231,183,.32); }
-.badge-amber  { background: rgba(252,211,77,.28);  color: #78350f; border-color: rgba(252,211,77,.38);  }
-.badge-green  { background: rgba(74,222,128,.22);  color: #14532d; border-color: rgba(74,222,128,.32);  }
+.badge-violet { background: rgba(167,139,250,.20); color: #4c1d95; border-color: rgba(167,139,250,.35); }
+.badge-sky    { background: rgba(125,211,252,.20); color: #0c4a6e; border-color: rgba(125,211,252,.35); }
+.badge-rose   { background: rgba(253,164,175,.20); color: #9f1239; border-color: rgba(253,164,175,.35); }
+.badge-mint   { background: rgba(110,231,183,.20); color: #065f46; border-color: rgba(110,231,183,.35); }
+.badge-amber  { background: rgba(252,211,77,.26);  color: #78350f; border-color: rgba(252,211,77,.38);  }
+.badge-green  { background: rgba(74,222,128,.20);  color: #14532d; border-color: rgba(74,222,128,.35);  }
 
-/* ─────────────────────────────────────────────
-   Scrollbar (subtle, matches palette)
-───────────────────────────────────────────── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: rgba(167,139,250,.32);
-  border-radius: 999px;
-}
-::-webkit-scrollbar-thumb:hover { background: rgba(124,58,237,.50); }
-
-/* ─────────────────────────────────────────────
-   Animations
-───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════ */
 @keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0);   }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
-.animate-in { animation: fadeSlideUp .22s ease-out; }
+.animate-in {
+  animation: fadeSlideUp .22s ease-out both;
+}
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-.animate-spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 0.9s linear infinite; }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: .4; }
+  50%       { opacity: .45; }
 }
 .animate-pulse { animation: pulse 2s ease-in-out infinite; }
+
+/* ═══════════════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(167,139,250,.30);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(124,58,237,.48); }
+
+/* ═══════════════════════════════════════════════════════
+   DIVIDER
+═══════════════════════════════════════════════════════ */
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(167,139,250,.30) 30%,
+    rgba(167,139,250,.30) 70%,
+    transparent 100%
+  );
+  margin: 0.25rem 0;
+}
