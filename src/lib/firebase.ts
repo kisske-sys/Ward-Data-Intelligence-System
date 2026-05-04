@@ -1,3 +1,5 @@
+// ไฟล์นี้อ่านค่าจาก Vercel Environment Variables ผ่าน import.meta.env
+// ให้เพิ่ม VITE_ prefix ทุกตัวใน Vercel Dashboard → Settings → Environment Variables
 import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -11,8 +13,10 @@ const firebaseConfig = {
   appId:             import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+// getApps() ป้องกัน "duplicate app" error ใน hot-reload
+const app = getApps().length === 0
+  ? initializeApp(firebaseConfig)
+  : getApps()[0];
 
 export const db      = getFirestore(app);
 export const storage = getStorage(app);
-export default app;
