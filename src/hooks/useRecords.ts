@@ -1,6 +1,7 @@
+import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  collection, getDocs, addDoc,
+  collection, getDocs, addDoc, onSnapshot,
   query, where, serverTimestamp, orderBy, limit, Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -27,6 +28,22 @@ export interface FormRecord {
 const COL = "records";
 
 export function useRecords(formId?: string, date?: string) {
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    const constraints: Parameters<typeof query>[1][] = [];
+    if (formId) constraints.push(where("formId", "==", formId));
+    if (date)   constraints.push(where("recordDate", "==", date));
+    constraints.push(orderBy("createdAt", "desc"));
+    
+    // อัปเดตข้อมูลอัตโนมัติเมื่อมีการบันทึกจากเครื่องอื่น (Real-time Sync)
+    const unsub = onSnapshot(query(collection(db, COL), ...constraints), (snap) => {
+      const liveData = snap.docs.map((d) => ({ id: d.id, ...d.data() } as FormRecord));
+      qc.setQueryData(["records", formId ?? "all", date ?? "all"], liveData);
+    });
+    return () => unsub();
+  }, [qc, formId, date]);
+
   return useQuery({
     queryKey: ["records", formId ?? "all", date ?? "all"],
     queryFn: async () => {
@@ -42,6 +59,17 @@ export function useRecords(formId?: string, date?: string) {
 }
 
 export function useRecentRecords(limitCount = 20) {
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    const q = query(collection(db, COL), orderBy("createdAt", "desc"), limit(limitCount));
+    const unsub = onSnapshot(q, (snap) => {
+      const liveData = snap.docs.map((d) => ({ id: d.id, ...d.data() } as FormRecord));
+      qc.setQueryData(["records", "recent", limitCount], liveData);
+    });
+    return () => unsub();
+  }, [qc, limitCount]);
+
   return useQuery({
     queryKey: ["records", "recent", limitCount],
     queryFn: async () => {
