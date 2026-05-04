@@ -1,40 +1,39 @@
 // src/components/BottomBar.tsx
-// z-40 > z-30 (FooterBar) → BottomBar จะลอยเหนือ FooterBar บน mobile
-// bottom-6 ทำให้ BottomBar อยู่เหนือ FooterBar (~24px)
+// ใช้ class "bottom-nav" ที่ define ใน CSS แล้ว
+// CSS จัดการ position, z-index, และ bottom offset ให้หมด
+// ที่นี่จึงมีแค่ content เท่านั้น
 
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, AlertTriangle, Settings } from "lucide-react";
-
-const NAV = [
-  { href: "/",         icon: LayoutDashboard, label: "หน้าหลัก" },
-  { href: "/issues",   icon: AlertTriangle,   label: "ปัญหา"    },
-  { href: "/settings", icon: Settings,        label: "ตั้งค่า"  },
-];
+import { NAV_ITEMS } from "@/App";
 
 export default function BottomBar() {
   const [location] = useLocation();
 
   return (
-    <nav
-      className="glass fixed left-3 right-3 z-40 flex items-center
-                 justify-around px-2 py-2 rounded-2xl md:hidden"
-      // bottom: 30px ให้ FooterBar (~28px) โผล่ข้างล่าง
-      style={{ bottom: "30px" }}
-    >
-      {NAV.map(({ href, icon: Icon, label }) => {
-        const active = location === href;
+    <nav className="bottom-nav">
+      {NAV_ITEMS.map(({ href, Icon, label, color }) => {
+        const active = href === "/" ? location === "/" : location.startsWith(href);
+
         return (
           <Link
             key={href}
             href={href}
-            className={`flex flex-col items-center gap-0.5 px-5 py-1.5 rounded-xl text-xs
-                        font-medium transition-all
-                        ${active
-                          ? "text-violet-700 bg-violet-100/60 font-semibold"
-                          : "text-slate-500 hover:text-violet-600"
-                        }`}
+            className={`flex flex-col items-center gap-1 px-4 py-1.5 
+                        rounded-xl text-xs transition-all min-w-[64px]
+                        ${active ? "font-semibold" : "opacity-55 hover:opacity-80"}`}
+            style={{ color: active ? color : "var(--tx-secondary)" }}
           >
-            <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+            {/* Active indicator — dot ที่ด้านบนของ icon */}
+            <span className="relative">
+              {active && (
+                <span
+                  className="absolute -top-1 left-1/2 -translate-x-1/2
+                             w-1 h-1 rounded-full"
+                  style={{ background: color }}
+                />
+              )}
+              <Icon size={20} strokeWidth={active ? 2.2 : 1.7} />
+            </span>
             {label}
           </Link>
         );
