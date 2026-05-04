@@ -4,7 +4,7 @@
    DESIGN TOKENS: ปรับสีตัวอักษรให้เข้ม อ่านง่าย สีพื้นพาสเทล
 ═══════════════════════════════════════════════════════ */
 :root {
-  /* โทนพาสเทล ลดความฉูดฉาด */
+  /* โทนพาสเทล */
   --grad-start:  #e0e7ff;   
   --grad-mid:    #f5f3ff;   
   --grad-end:    #fae8ff;   
@@ -12,7 +12,7 @@
   /* กระจกขอบมนๆ เน้นอ่านง่ายสบายตา */
   --glass-bg:          rgba(255, 255, 255, 0.65);
   --glass-bg-hover:    rgba(255, 255, 255, 0.80);
-  --glass-strong-bg:   rgba(255, 255, 255, 0.85); /* เน้นทึบตรง Navbar */
+  --glass-strong-bg:   rgba(255, 255, 255, 0.85);
   --glass-card-bg:     rgba(255, 255, 255, 0.55);
   --glass-border:      rgba(255, 255, 255, 0.90);
   --glass-border-soft: rgba(255, 255, 255, 0.60);
@@ -23,10 +23,10 @@
   --glass-blur-strong: blur(32px) saturate(200%);
 
   /* ตัวหนังสือปรับให้เป็นสีเข้มเกือบดำชัดเจนสูงสุด! */
-  --tx-primary:   #0f172a;   /* slate-900 */
-  --tx-secondary: #334155;   /* slate-700 */
-  --tx-muted:     #475569;   /* slate-600 */
-  --tx-faint:     #64748b;   /* slate-500 */
+  --tx-primary:   #0f172a;   
+  --tx-secondary: #334155;   
+  --tx-muted:     #475569;   
+  --tx-faint:     #64748b;   
 
   /* พาสเทล Accents */
   --accent-violet: #8b5cf6;
@@ -46,14 +46,11 @@
 html { scroll-behavior: smooth; font-size: 15px; }
 
 body {
-  font-family: 'Sarabun', system-ui, sans-serif;
+  font-family: 'Sarabun', 'Noto Sans Thai', system-ui, -apple-system, sans-serif;
   color: var(--tx-primary);
   min-height: 100svh;
   
-  /* 
-   * เปลี่ยน URL พื้นหลังของคุณตรงนี้! 
-   * โหมด overlay จะผสานรูปเข้ากับสีพาสเทลอัตโนมัติ
-  */
+  /* ภาพพื้นหลัง + พาสเทล Gradient ซ้อนกัน */
   background-image: 
     url('https://images.unsplash.com/photo-1557683311-eac922347aa1?q=80&w=2529&auto=format&fit=crop'), 
     linear-gradient(135deg, var(--grad-start), var(--grad-mid), var(--grad-end));
@@ -76,12 +73,12 @@ body {
   width: 100%; max-width: 800px; margin: 0 auto;
   /* จุดสำคัญ: ดัน Padding ให้พ้น BottomBar ยืดให้ไม่ทับกัน */
   padding-top: calc(var(--topbar-h) + 1.5rem);
-  padding-bottom: calc(var(--bottombar-h) + var(--footer-h) + 2rem);
+  padding-bottom: calc(var(--bottombar-h) + var(--footer-h) + 2.5rem);
   padding-left: 1rem; padding-right: 1rem;
 }
 
 @media (min-width: 768px) {
-  .sidebar { /* กระจกขอบมนสำหรับ Desktop */
+  .sidebar { 
     display: flex; flex-direction: column; position: fixed;
     top: calc(var(--topbar-h) + 1rem); left: 1rem; 
     width: var(--sidebar-w);
@@ -91,8 +88,8 @@ body {
     border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow-md);
   }
   .main-area {
-    margin-left: calc(var(--sidebar-w) + 1rem);
-    padding-bottom: calc(var(--footer-h) + 2rem); /* พื้นที่ Desktop */
+    margin-left: calc(var(--sidebar-w) + 1.5rem);
+    padding-bottom: calc(var(--footer-h) + 2rem); 
   }
   .bottom-nav { display: none !important; }
 }
@@ -106,7 +103,7 @@ body {
   padding: 0 1.5rem;
   background: var(--glass-strong-bg); backdrop-filter: var(--glass-blur-strong);
   border-bottom: 1px solid var(--glass-border); box-shadow: var(--glass-shadow-sm);
-  border-radius: 0 0 24px 24px; /* มนเฉพาะด้านล่าง */
+  border-radius: 0 0 24px 24px; 
 }
 
 .footer-bar {
@@ -118,7 +115,7 @@ body {
 
 .bottom-nav {
   position: fixed; left: 1rem; right: 1rem;
-  bottom: calc(var(--footer-h) + 0.5rem);
+  bottom: calc(var(--footer-h) + 0.75rem);
   height: var(--bottombar-h); z-index: 40;
   display: flex; align-items: center; justify-content: space-around;
   border-radius: 28px; 
@@ -127,19 +124,21 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════
-   GLASS & COMPONENTS OVERRIDE
+   GLASS & COMPONENTS
+   เปลี่ยนเป็นกล่องมนสวยๆ
 ═══════════════════════════════════════════════════════ */
 .glass, .glass-card, .glass-strong {
-  border-radius: 24px; /* โค้งมนละมุนๆ ทุกอัน */
+  border-radius: 24px; 
   background: var(--glass-bg); backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow-sm);
   transition: all 0.2s ease;
 }
+.glass-strong { background: var(--glass-strong-bg); }
 
 /* Inputs ทำให้ชัดๆ */
 .input-glass {
   display: block; width: 100%; padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.85); /* พื้นหลังขาวเกือบ 100% ให้อ่านพิมพ์ง่าย */
+  background: rgba(255, 255, 255, 0.85); 
   border: 2px solid rgba(139, 92, 246, 0.15); border-radius: 16px;
   color: var(--tx-primary); font-size: 0.95rem; font-weight: 500; outline: none;
   transition: 0.2s;
@@ -147,6 +146,14 @@ body {
 .input-glass:focus {
   background: #ffffff; border-color: var(--accent-violet);
   box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+}
+
+select.input-glass {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
 }
 
 /* Buttons */
@@ -157,10 +164,27 @@ body {
   box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35); transition: 0.2s;
 }
 .btn-primary:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.05); }
+.btn-primary:active:not(:disabled) { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 .btn-ghost {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-  padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.6); borderRadius: 16px;
+  padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.6); border-radius: 16px;
   border: 1.5px solid var(--glass-border); color: var(--tx-secondary); font-weight: 600; cursor: pointer;
 }
-.btn-ghost:hover { background: rgba(255,255,255,0.9); }
+.btn-ghost:hover { background: rgba(255,255,255,1); }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 0.2rem;
+  padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.7rem;
+  font-weight: 700; white-space: nowrap;
+}
+.badge-violet { background: rgba(139,92,246,0.15); color: #6d28d9; border: 1px solid rgba(139,92,246,0.3); }
+.badge-sky    { background: rgba(14,165,233,0.15); color: #0369a1; border: 1px solid rgba(14,165,233,0.3); }
+
+.animate-in { animation: fadeSlideUp .25s ease-out both; }
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
