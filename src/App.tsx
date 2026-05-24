@@ -27,18 +27,19 @@ export const NAV_ITEMS = [
 
 export default function App() {
   return (
-    <div className="app-shell">
+    <div className="app-shell w-full overflow-x-hidden">
       {/* ─── Top Bar (ทุก viewport) ─── */}
       <TopBar />
 
       {/* ─── Body Area (Sidebar + Content) ─── */}
-      <div className="flex min-h-svh">
+      <div className="flex min-h-svh w-full">
 
         {/* ─── Sidebar (desktop only เพราะ CSS ซ่อนบน mobile) ─── */}
         <DesktopSidebar />
 
         {/* ─── Main Content ─── */}
-        <main className="main-area flex-1">
+        {/* เพิ่ม w-full เพื่อบังคับให้ขยายเต็มพื้นที่ที่เหลือ */}
+        <main className="main-area flex-1 w-full">
           <Switch>
             <Route path="/"              component={HomePage}     />
             <Route path="/category/:id"  component={CategoryPage} />
