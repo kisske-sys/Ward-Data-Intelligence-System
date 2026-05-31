@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "wouter";
 import { ClipboardList, AlertTriangle, CheckCircle2, TrendingUp, ChevronRight, Plus } from "lucide-react";
 import { useCategories } from "@/hooks/useCategories";
@@ -13,17 +14,24 @@ export default function Dashboard() {
   const { data: recentRecords } = useRecentRecords(50);
   const { data: openIssues } = useIssues("open");
 
-  const todayRecords = recentRecords?.filter((r) => r.recordDate === todayKey) ?? [];
+  // ⚡ ใช้ useMemo เพื่อป้องกันการวนลูป Filter ใหม่ทุกครั้งที่ Re-render
+  const todayRecords = useMemo(() => {
+    return recentRecords?.filter((r) => r.recordDate === todayKey) ?? [];
+  }, [recentRecords, todayKey]);
+
+  const lowStockCount = useMemo(() => {
+    return todayRecords.filter((r) => r.hasLowStock).length;
+  }, [todayRecords]);
+
   const issueCount = openIssues?.length ?? 0;
-  const lowStockCount = todayRecords.filter((r) => r.hasLowStock).length;
   const formsCount = allForms?.length ?? 0;
 
-  const STAT_CARDS = [
+  const STAT_CARDS = useMemo(() => [
     { label: "บันทึกวันนี้",   value: todayRecords.length, icon: <ClipboardList size={20} />, color: "#7c3aed", bg: "rgba(124,58,237,0.1)"  },
-    { label: "ปัญหาที่เปิดอยู่", value: issueCount,           icon: <AlertTriangle size={20} />,  color: "#f59e0b", bg: "rgba(245,158,11,0.1)"  },
+    { label: "ปัญหาที่เปิดอยู่", value: issueCount,            icon: <AlertTriangle size={20} />,  color: "#f59e0b", bg: "rgba(245,158,11,0.1)"  },
     { label: "แจ้งเตือนของต่ำ",  value: lowStockCount,         icon: <TrendingUp size={20} />,    color: "#ef4444", bg: "rgba(239,68,68,0.1)"   },
     { label: "แบบบันทึกทั้งหมด", value: formsCount,            icon: <CheckCircle2 size={20} />,  color: "#10b981", bg: "rgba(16,185,129,0.1)"  },
-  ];
+  ], [todayRecords.length, issueCount, lowStockCount, formsCount]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -53,13 +61,14 @@ export default function Dashboard() {
         <h2 className="text-sm font-bold mb-3 px-1" style={{ color: "var(--tx-primary)" }}>หมวดหมู่</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {categories?.map((cat) => {
+            // ⚡ ลดการคำนวณซ้ำซ้อนในลูป
             const catForms = allForms?.filter((f) => f.categoryId === cat.id) ?? [];
             const catRecords = todayRecords.filter((r) =>
               catForms.some((f) => f.id === r.formId)
             );
             return (
               <Link key={cat.id} href={`/category/${cat.id}`}>
-                <div className="glass-card p-4 flex items-center gap-4 cursor-pointer">
+                <div className="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-white/40 transition-colors">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                     style={{ background: cat.color + "22", color: cat.color }}>
                     <span className="text-lg">●</span>
