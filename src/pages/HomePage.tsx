@@ -10,14 +10,17 @@ import {
   useCategories, useCreateCategory,
   useUpdateCategory, useDeleteCategory,
   useForms, useDeleteForm,
-  type Category,
+  type Category, type FormTemplate // อิมพอร์ต FormTemplate เพิ่มมาเพื่อใช้กำหนด Type
 } from "@/hooks/useForms";
 import FormBuilderModal from "@/components/FormBuilderModal";
 import CategoryModal from "@/components/CategoryModal";
 
 export default function HomePage() {
   const { isEditor } = useEditor();
-  const { data: categories = [], isLoading } = useCategories();
+  
+  // 1. ดึงข้อมูล Categories และ Forms ทั้งหมดจาก Database มารอไว้เลย (โหลดรอบเดียว)
+  const { data: categories = [], isLoading: catLoading } = useCategories();
+  const { data: allForms = [], isLoading: formsLoading } = useForms();
 
   // state สำหรับ Modal ต่างๆ
   const [catModal, setCatModal]   = useState<{ open: boolean; cat?: Category }>({ open: false });
@@ -31,7 +34,8 @@ export default function HomePage() {
     await deleteCategory.mutateAsync(id);
   };
 
-  if (isLoading) {
+  // 2. แสดงหน้าต่างโหลดข้อมูล จนกว่าจะดึงมาเสร็จทั้ง 2 ส่วน
+  if (catLoading || formsLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] gap-3">
         <Loader2 size={28} className="animate-spin text-violet-500" />
@@ -73,19 +77,25 @@ export default function HomePage() {
         />
       ) : (
         <div className="flex flex-col gap-4">
-          {categories.map((cat) => (
-            <CategoryCard
-              key={cat.id}
-              category={cat}
-              isEditor={isEditor}
-              onEditCat={() => setCatModal({ open: true, cat })}
-              onDeleteCat={() => handleDeleteCategory(cat.id, cat.name)}
-              onAddForm={() => setFormModal({ open: true, categoryId: cat.id })}
-              onDeleteForm={(fid) => {
-                if (confirm("ลบแบบบันทึกนี้?")) deleteForm.mutateAsync(fid);
-              }}
-            />
-          ))}
+          {categories.map((cat) => {
+            // 3. กรองข้อมูลแบบบันทึก (Forms) ให้เหลือเฉพาะของหมวดหมู่ (Category) นี้
+            const categoryForms = allForms.filter((form) => form.categoryId === cat.id);
+
+            return (
+              <CategoryCard
+                key={cat.id}
+                category={cat}
+                forms={categoryForms} // โยนข้อมูลที่กรองแล้วลงไปให้การ์ด
+                isEditor={isEditor}
+                onEditCat={() => setCatModal({ open: true, cat })}
+                onDeleteCat={() => handleDeleteCategory(cat.id, cat.name)}
+                onAddForm={() => setFormModal({ open: true, categoryId: cat.id })}
+                onDeleteForm={(fid) => {
+                  if (confirm("ลบแบบบันทึกนี้?")) deleteForm.mutateAsync(fid);
+                }}
+              />
+            );
+          })}
         </div>
       )}
 
@@ -137,6 +147,7 @@ function EmptyState({
 
 function CategoryCard({
   category,
+  forms, // 4. รับ forms มาเป็น Props แทนการดึง API
   isEditor,
   onEditCat,
   onDeleteCat,
@@ -144,13 +155,14 @@ function CategoryCard({
   onDeleteForm,
 }: {
   category: Category;
+  forms: FormTemplate[]; // ระบุ Type ให้ชัดเจน
   isEditor: boolean;
   onEditCat: () => void;
   onDeleteCat: () => void;
   onAddForm: () => void;
   onDeleteForm: (id: string) => void;
 }) {
-  const { data: forms = [] } = useForms(category.id);
+  // นำการเรียก useForms ในนี้ออกแล้ว เพื่อแก้ปัญหาหน้าเว็บค้าง
 
   return (
     <div className="glass rounded-2xl overflow-hidden">
